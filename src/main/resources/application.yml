@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: sbapp
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database: postgresql
+    show-sql: false
+    open-in-view: false
+  jackson:
+    default-property-inclusion: non_null
+
+logging.level:
+  nl.rcomanne: DEBUG
+
+words:
+  init: false

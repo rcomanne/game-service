@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <title>Play with Letters</title>
+    <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/main.css" rel="stylesheet">
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+    <script src="/app.js"></script>
+</head>
+<body>
+<noscript>
+    <h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being enabled. Please enable Javascript and reload this page!</h2>
+</noscript>
+<div id="main-content" class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col">
+            <form class="form-inline">
+                <div class="form-group">
+                    <label for="playerName">Wat is je naam?</label>
+                    <input type="text" id="playerName" class="form-control" placeholder="Jouw naam hier...">
+                </div>
+                <button id="create-player" class="btn btn-default" type="submit">Start met spelen!</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

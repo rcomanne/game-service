@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <title>Game overview</title>
+    <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/main.css" rel="stylesheet">
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+    <script src="/app.js"></script>
+</head>
+<body onload="connect()">
+<noscript>
+    <h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being
+        enabled. Please enable Javascript and reload this page!</h2>
+</noscript>
+<div id="main-content" class="container">
+    <div class="row">
+        <div class="col">
+            <table id="game" class="table table-striped">
+                <thead>
+                    <tr id="game-message">
+                </tr>
+                </thead>
+                <tbody id="moves">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <form class="form-inline">
+                <div class="form-group">
+                    <label for="word-input">Wat is jouw antwoord?</label>
+                    <input disabled="disabled" type="text" id="word-input" class="form-control" placeholder="Jouw woord hier...">
+                </div>
+                <button id="create-move" class="btn" type="submit">Raad!</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
