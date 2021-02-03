@@ -5,6 +5,11 @@ function setConnected(connected) {
     this.connected = connected;
 }
 
+function initializeGame() {
+    updateGame(getGame());
+    connect();
+}
+
 function connect() {
     // Connect to WebSocket
     const socket = new SockJS('/letter-game');
@@ -72,7 +77,6 @@ function createGame() {
             if (status === "success") {
                 console.log(game);
                 setGame(game);
-                connect(game.id)
                 window.location.href = "game.html";
             } else {
                 console.log("failed?");
@@ -161,18 +165,29 @@ function updateGame(game) {
         message.push('</th></tr>');
         $("#game-message").replaceWith(message.join(""));
 
+        let html = [];
+        html.push('<tbody id="moves">');
+
         if (game.moves !== undefined && game.moves.length !== 0) {
-            let html = [];
-            html.push('<tbody id="moves">');
             for (let i = 0; i < game.moves.length; i++) {
                 html.push('<tr><td>')
                 html.push(game.moves[i].word)
                 html.push('</tr></td>')
                 html.push("\n")
             }
-            html.push("</tbody>")
-            $("#moves").replaceWith(html.join(""))
         }
+
+        if (game.placeholder !== undefined && game.placeholder.length !== 0) {
+            html.push('<tr><td>')
+            for (let i = 0; i < game.placeholder.length; i++) {
+                html.push(`<p class="${game.placeholder[i].state.toLowerCase()} letter">${game.placeholder[i].letter}</p>`);
+            }
+            html.push('</tr></td>')
+            html.push("\n")
+        }
+
+        html.push("</tbody>")
+        $("#moves").replaceWith(html.join(""))
 
         if (game.state === "ACTIVE") {
             $("#word-input")[0].disabled = !hasTurn();
@@ -205,26 +220,6 @@ function setName() {
     const name = getPlayer().name;
     console.log("setting name to " + name);
     $("#overview-name").replaceWith("<div id=\"overview-name\"><h2>Hello " + name + "!</h2></div>");
-}
-
-function showGame(game) {
-    if (game !== undefined) {
-        if (game.state === "ACTIVE") {
-            $("#word-input")[0].disabled = !hasTurn();
-        } else {
-            $("#word-input")[0].disabled = true;
-        }
-
-        if (game.moves !== undefined && game.moves.length !== 0) {
-            for (i = 0; i < game.moves.length; i++) {
-                $("#moves").append(
-                    "<tr><td>" +
-                    game.moves[i].word +
-                    "</tr></td>"
-                )
-            }
-        }
-    }
 }
 
 function setPlayer(player) {

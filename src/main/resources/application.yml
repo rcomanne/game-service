@@ -6,10 +6,10 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     database: postgresql
     show-sql: false
-    open-in-view: false
+    open-in-view: true
   jackson:
     default-property-inclusion: non_null
 
@@ -17,4 +17,4 @@ logging.level:
   nl.rcomanne: DEBUG
 
 words:
-  init: false
+  init: true

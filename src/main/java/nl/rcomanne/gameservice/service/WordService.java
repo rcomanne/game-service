@@ -40,7 +40,9 @@ public class WordService {
                         return;
                     }
                     log.debug("adding word [{}] to list", w);
-                    words.add(new Word(w, w.length()));
+                    if (w.length() == 5 || w.length() == 6) {
+                        words.add(new Word(w, w.length()));
+                    }
                 });
                 log.info("now saving all the words...");
                 repository.saveAll(words);

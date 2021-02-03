@@ -35,4 +35,20 @@ public class WSGameController {
             messagingTemplate.convertAndSend("/topic/game/" + gameId, gameService.findGameById(gameId));
         }
     }
+
+    @MessageMapping("/game/{gameId}")
+    public void addMove(@DestinationVariable final long gameId, final boolean reset) {
+        log.info("resetting game [{}]", gameId);
+        try {
+            Game game;
+            if (reset) {
+                game = gameService.resetGame(gameId);
+            } else {
+                game = gameService.findGameById(gameId);
+            }
+            messagingTemplate.convertAndSend("/topic/game/" + gameId, game);
+        } catch (final IllegalArgumentException ex) {
+            messagingTemplate.convertAndSend("/topic/game/" + gameId, gameService.findGameById(gameId));
+        }
+    }
 }

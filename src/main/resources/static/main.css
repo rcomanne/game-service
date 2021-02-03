@@ -1,0 +1,23 @@
+.correct {
+    background-color: green;
+}
+
+.wrong_place {
+    background-color: yellow;
+}
+
+.wrong {
+    background-color: red;
+}
+
+.unknown {
+    color: black;
+}
+
+.letter {
+    display: inline-block;
+    text-align: center;
+    padding: 10px;
+    font-size: 20px;
+    color: white;
+}

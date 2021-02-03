@@ -5,13 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rcomanne.gameservice.domain.*;
 import nl.rcomanne.gameservice.repository.AnswerRepository;
 import nl.rcomanne.gameservice.repository.GameRepository;
+import nl.rcomanne.gameservice.repository.LetterRepository;
 import nl.rcomanne.gameservice.web.dto.GameDto;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.List;
-import java.util.Locale;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -21,10 +20,12 @@ public class GameService {
 
     private final GameRepository repository;
     private final AnswerRepository answerRepository;
+    private final LetterRepository letterRepository;
 
     private final PlayerService playerService;
     private final WordService wordService;
 
+    @Transactional
     public List<Game> findGamesToJoin() {
         return repository.findAllByState(GameState.WAITING_FOR_PLAYER);
     }
@@ -50,8 +51,29 @@ public class GameService {
         answerRepository.save(answer);
         final Game game = new Game(gameDto.getName(), playerOne, DEFAULT_WORD_LENGTH);
         game.setAnswer(answer);
+        final List<Letter> letters = new ArrayList<>();
+        letters.add(letterRepository.save(new Letter(answer.getWord().charAt(0), LetterState.CORRECT)));
+        game.setPlaceholder(letters);
         playerOne.setTurn(true);
         return repository.save(game);
+    }
+
+    @Transactional
+    public Game resetGame(final long gameId) {
+        // get the game to reset
+        final Game game = this.findGameById(gameId);
+        game.reset();
+
+        // create a new answer for the session
+        final Answer answer = new Answer(wordService.findRandomWordWithLength(DEFAULT_WORD_LENGTH).getWord());
+        answerRepository.save(answer);
+        game.setAnswer(answer);
+        // create the new placeholder
+        final List<Letter> letters = new ArrayList<>();
+        letters.add(letterRepository.save(new Letter(answer.getWord().charAt(0), LetterState.CORRECT)));
+        game.setPlaceholder(letters);
+
+        return game;
     }
 
     @Transactional
@@ -60,15 +82,49 @@ public class GameService {
         try {
             validateMove(game, move);
             game.addMove(move);
+
             if (move.getWord().equalsIgnoreCase(game.getAnswer().getWord())) {
-                game.setState(GameState.DONE);
-                game.setMessage("correct, you win!");
+                // winner winner chicken dinner
+                game.gameFinished();
             } else {
+                // not correct, processing the rest
                 game.setMessage("try again");
+
+                final String answer = game.getAnswer().getWord();
+                final List<Letter> letters = move.getLetters();
+
+                final Map<Integer, Character> alreadyFound = new HashMap<>();
+                for (int i = 0; i < letters.size(); i++) {
+                    final Letter letter = letters.get(i);
+
+                    // check if letter in position is the same as the one of the answer
+                    if (answer.charAt(i) == letter.getLetter()) {
+                        letter.setState(LetterState.CORRECT);
+                        alreadyFound.put(i, letter.getLetter());
+                    } else {
+                        String toIndex = answer;
+                        // check if found previously
+                        for (Map.Entry<Integer, Character> entry : alreadyFound.entrySet()) {
+                            if (entry.getValue().equals(letter.getLetter())) {
+                                toIndex = toIndex.substring(entry.getKey());
+                            }
+                        }
+
+                        // check if letter exists in answer
+                        int index = toIndex.indexOf(letter.getLetter());
+                        if (index >= 0) {
+                            log.debug("answer contains letter [{}]", letter.getLetter());
+                            letter.setState(LetterState.WRONG_PLACE);
+                            alreadyFound.put(index, letter.getLetter());
+                        } {
+                            letter.setState(LetterState.WRONG);
+                        }
+                    }
+                }
+                game.setPlaceholder(letters);
             }
         } catch (final IllegalArgumentException ex) {
-            game.switchTurn();
-            game.setMessage(ex.getMessage());
+            game.switchTurn(ex.getMessage());
         }
         return game;
     }

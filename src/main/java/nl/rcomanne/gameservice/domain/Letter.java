@@ -1,6 +1,6 @@
 package nl.rcomanne.gameservice.domain;
 
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,25 +9,26 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @Entity
-public class Answer {
+@NoArgsConstructor
+public class Letter {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonIgnore
     private long id;
 
-    private String word;
+    private char letter;
+    private LetterState state;
 
-    public Answer(final String word) {
-        this.word = word;
+    public Letter(final char letter, final LetterState state) {
+        this.letter = letter;
+        this.state = state;
     }
 
-    public List<Letter> toLetters() {
-        return word.chars().mapToObj(c -> new Letter((char) c, LetterState.CORRECT)).collect(Collectors.toList());
+    public Letter(final char letter) {
+        this(letter, LetterState.UNKNOWN);
     }
 }
