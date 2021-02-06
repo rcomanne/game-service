@@ -3,6 +3,7 @@ pipeline {
 
     tools {
         maven 'mvn'
+        dockerTool 'docker'
     }
 
     stages {
@@ -20,8 +21,11 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                echo 'Deploying...'
-                sh "kubectl version"
+                kubeconfig(credentialsId: 'd16bd5ea-3748-4f62-a794-8be66121551d', serverUrl: '') {
+                    echo 'Deploying...'
+                    sh "kubectl version"
+                    sh "kubectl config view"
+                }
             }
         }
     }
