@@ -1,0 +1,35 @@
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  namespace: services
+  name: game-service
+  labels:
+    app: game-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: game-service
+  template:
+    metadata:
+      labels:
+        app: game-service
+    spec:
+      containers:
+        - name: game-service
+          image: game-service:latest
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: k8s
+          ports:
+            - name: web
+              containerPort: 8080
+        - name: database
+          image: postgres:13-alpine
+          env:
+            - name: POSTGRES_PASSWORD
+              value: test
+          ports:
+            - name: database
+              containerPort: 5432

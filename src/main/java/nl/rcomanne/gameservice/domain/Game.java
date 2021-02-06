@@ -83,7 +83,7 @@ public class Game {
 
     public void gameFinished() {
         this.state = GameState.DONE;
-        this.placeholder = this.answer.toLetters();
+        this.setPlaceholder(this.answer.toLetters());
         this.message = "Gefeliciteerd, je hebt gewonnen!";
     }
 
