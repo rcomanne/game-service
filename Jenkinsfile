@@ -1,29 +1,17 @@
 pipeline {
-    agent {
-        kubernetes {
-            label 'service-maven'
-            image 'maven:3-adoptopenjdk-11'
-            command: 'sleep'
-            args: '999999'
-        }
-        podRetention onFailure()
-    }
+    agent kubernetes
 
     stages {
         stage('Build') {
             steps {
-                container('maven') {
-                    echo 'Building...'
-                    sh "mvn clean install"
-                }
+                echo 'Building...'
+                sh "mvn clean install"
             }
         }
         stage('Test') {
             steps {
-                container('maven') {
-                    echo 'Testing...'
-                    sh "mvn clean verify"
-                }
+                echo 'Testing...'
+                sh "mvn clean verify"
             }
         }
         stage('Deploy') {
