@@ -4,18 +4,14 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                container('maven') {
-                    echo 'Building...'
-                    sh "mvn clean install"
-                }
+                echo 'Building...'
+                sh "mvn clean install"
             }
         }
         stage('Test') {
             steps {
-                container('maven') {
-                    echo 'Testing...'
-                    sh "mvn clean verify"
-                }
+                echo 'Testing...'
+                sh "mvn clean verify"
             }
         }
         stage('Deploy') {
