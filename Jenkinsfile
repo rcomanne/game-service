@@ -3,11 +3,6 @@ pipeline {
         label 'jenkins-slave'
     }
 
-    tools {
-        maven 'mvn'
-        dockerTool 'docker'
-    }
-
     stages {
         stage('Build') {
             steps {
