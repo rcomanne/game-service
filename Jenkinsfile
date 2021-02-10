@@ -1,23 +1,33 @@
-node('jenkins-slave') {
-
-    stage('Build') {
-        steps {
-            echo 'Building...'
-            sh "mvn clean install"
-        }
+pipeline {
+    agent {
+        label 'jenkins-slave'
     }
-    stage('Test') {
-        steps {
-            echo 'Testing...'
-            sh "mvn clean verify"
-        }
-    }
-    stage('Deploy') {
-        steps {
-            echo 'Deploying...'
-            sh "kubectl version"
-            sh "kubectl config view"
-        }
 
+    tools {
+        maven 'mvn'
+        dockerTool 'docker'
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building...'
+                sh "mvn clean install"
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Testing...'
+                sh "mvn clean verify"
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploying...'
+                sh "kubectl version"
+                sh "kubectl config view"
+            }
+
+        }
     }
 }
