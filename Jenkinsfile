@@ -10,6 +10,9 @@ pipeline {
     stages {
         stage('Build') {
             steps {
+                sh "ls -la /var/run/"
+                sh "whoami"
+                sh "id"
                 echo 'Building...'
                 sh "mvn clean install"
             }
