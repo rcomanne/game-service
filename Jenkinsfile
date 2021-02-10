@@ -3,13 +3,11 @@ pipeline {
         label 'jenkins-slave'
     }
 
-    tools {
-        dockerTool 'docker'
-    }
-
     stages {
         stage('Build') {
             steps {
+                sh "whoami"
+                sh "id"
                 echo 'Building...'
                 sh "mvn clean install"
             }
