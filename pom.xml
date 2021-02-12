@@ -152,6 +152,7 @@
                     <images>
                         <image>
                             <name>${project.artifactId}</name>
+                            <registry>docker.rcomanne.nl</registry>
                             <build>
                                 <from>adoptopenjdk/openjdk11:alpine-jre</from>
                                 <entryPoint>
@@ -171,7 +172,6 @@
                         </image>
                     </images>
                 </configuration>
-
                 <executions>
                     <execution>
                         <id>build</id>
@@ -188,6 +188,15 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>3.0.0-M1</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
             </plugin>
         </plugins>
     </build>

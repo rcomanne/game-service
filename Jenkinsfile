@@ -1,6 +1,10 @@
 pipeline {
     agent none
 
+    triggers {
+        githubPush()
+    }
+
     tools {
         maven 'mvn'
     }
@@ -23,6 +27,18 @@ pipeline {
             steps {
                 echo 'Testing...'
                 sh "mvn clean verify"
+            }
+        }
+
+        stage('Release') {
+            agent {
+                label 'jenkins-agent'
+            }
+            steps {
+                echo 'Releasing artifact'
+                withDockerRegistry(credentialsId: '5d633ea9-05d5-4038-bf63-a723025b95ff', url: 'docker.rcomanne.nl') {
+                    sh 'mvn clean deploy'
+                }
             }
         }
 
