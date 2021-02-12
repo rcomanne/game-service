@@ -36,7 +36,7 @@ pipeline {
             }
             steps {
                 echo 'Releasing artifact'
-                withDockerRegistry(credentialsId: '5d633ea9-05d5-4038-bf63-a723025b95ff', url: 'docker.rcomanne.nl') {
+                withDockerRegistry(credentialsId: '5d633ea9-05d5-4038-bf63-a723025b95ff', url: 'https://docker.rcomanne.nl') {
                     sh 'mvn clean deploy'
                 }
             }
