@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,7 +86,7 @@ public class Game {
     public void gameFinished() {
         this.state = GameState.DONE;
         this.setPlaceholder(this.answer.toLetters());
-        this.message = "Gefeliciteerd, je hebt gewonnen!";
+        this.message = String.format("Gefeliciteerd %s, je hebt gewonnen!", this.activePlayer().getName());
     }
 
     public void reset() {

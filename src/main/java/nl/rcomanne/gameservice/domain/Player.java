@@ -17,6 +17,7 @@ public class Player {
 
     @OneToOne
     private Game activeGame;
+    private int score;
 
     private String name;
     private boolean turn;
@@ -24,5 +25,9 @@ public class Player {
     public Player(final String name) {
         this.name = name;
         this.turn = false;
+    }
+
+    public void incrementScore(int toAdd) {
+        this.score += toAdd;
     }
 }

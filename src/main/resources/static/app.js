@@ -225,7 +225,7 @@ function getActivePlayerId() {
 function setName() {
     const name = getPlayer().name;
     console.log("setting name to " + name);
-    $("#overview-name").replaceWith("<div id=\"overview-name\"><h2>Hello " + name + "!</h2></div>");
+    $("#overview-name").replaceWith(`<div id="overview-name"><h2>Hallo ${name}!</h2></div>`);
 }
 
 function setPlayer(player) {

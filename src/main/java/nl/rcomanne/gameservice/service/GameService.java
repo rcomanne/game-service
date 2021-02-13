@@ -103,6 +103,7 @@ public class GameService {
             if (move.getWord().equalsIgnoreCase(game.getAnswer().getWord())) {
                 // winner winner chicken dinner
                 game.gameFinished();
+                game.activePlayer().incrementScore(25);
             } else {
                 // not correct, processing the rest
                 game.setMessage("try again");

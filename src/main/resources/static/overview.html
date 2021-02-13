@@ -1,7 +1,8 @@
-<!DOCTYPE html>
-<html lang="en-GB">
+<!doctype html>
+<html lang="en">
 <head>
-    <title>Game overview</title>
+    <meta charset="utf-8">
+    <title>Spel overzicht</title>
     <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="/main.css" rel="stylesheet">
     <script src="/webjars/jquery/jquery.min.js"></script>
@@ -13,35 +14,46 @@
 <noscript>
     <h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being enabled. Please enable Javascript and reload this page!</h2>
 </noscript>
-<div id="main-content" class="container">
-    <div class="row">
-        <div class="col">
-            <div id="overview-name"></div>
+<main class="container">
+    <div class="text-center">
+        <div class="mx-2 py-2" id="overview-name">
+
         </div>
-        <div class="col">
-            <form class="form-inline">
-                <div class="form-group">
-                    <label for="gameName">Wat is de naam voor je game?</label>
-                    <input type="text" id="gameName" class="form-control" placeholder="A name for your game">
+
+        <div class="mx-2 py-2">
+            <form>
+                <div class="mx-2 py-1 row">
+                    <div class="col">
+                        <h2>Maak een spel...</h2>
+                    </div>
                 </div>
-                <button id="create-game" class="btn btn-default" type="submit">Start game</button>
+                <div class="mx-2 py-1 row">
+                    <div class="col">
+                        <input type="text" id="gameName" class="form-control" placeholder="Naam van jouw spel...">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <button id="create-game" class="btn btn-primary" type="submit">Maak spel aan!</button>
+                    </div>
+                </div>
             </form>
         </div>
-    </div>
 
-    <div class="row">
-        <div class="col">
-            <table id="game-sessions" class="table table-striped">
+        <div class="mx-2 py-2">
+            <h2>Of ga naar een bestaande game...</h2>
+            <table id="game-sessions" class="table">
                 <thead>
-                <tr>
-                    <th>Active Sessions</th>
-                </tr>
+                    <tr>
+                        <th>Actieve sessies om te joinen</th>
+                    </tr>
                 </thead>
                 <tbody id="games">
+
                 </tbody>
             </table>
         </div>
     </div>
-</div>
+</main>
 </body>
 </html>
