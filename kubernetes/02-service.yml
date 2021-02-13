@@ -8,8 +8,9 @@ metadata:
     app: game-service
 spec:
   ports:
-    - protocol: TCP
-      name: http
-      port: 80
+    - name: web
+      protocol: TCP
+      port: 8080
+      targetPort: web
   selector:
     app: game-service

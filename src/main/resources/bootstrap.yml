@@ -1,3 +1,9 @@
 spring:
   profiles:
     active: dev
+
+---
+spring:
+  config:
+    activate:
+      on-profile: k8s

@@ -17,4 +17,4 @@ spec:
               service:
                 name: game-service
                 port:
-                  name: http
+                  name: web

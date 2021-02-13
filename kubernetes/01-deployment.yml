@@ -25,6 +25,8 @@ spec:
           ports:
             - name: web
               containerPort: 8080
+            - name: actuator
+              containerPort: 8081
         - name: database
           image: postgres:13-alpine
           env:
