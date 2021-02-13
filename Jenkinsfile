@@ -37,6 +37,7 @@ pipeline {
                     echo 'Deploying...'
                     sh 'kubectl apply -f kubernetes'
                     sh 'kubectl rollout restart deployment game-service'
+                    sh 'kubectl rollout status deployment game-service'
                 }
             }
 

@@ -40,7 +40,7 @@ public class WordService {
                     final BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))
             ) {
                 br.lines().forEach(w -> {
-                    if (w.contains("-") || w.contains("'") || Character.isUpperCase(w.charAt(0))) {
+                    if (w.contains("-") || w.contains("'") || w.contains(".") || Character.isUpperCase(w.charAt(0))) {
                         log.debug("found 'invalid' word [{}]", w);
                         return;
                     }

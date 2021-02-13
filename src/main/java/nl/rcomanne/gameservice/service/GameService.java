@@ -6,6 +6,7 @@ import nl.rcomanne.gameservice.domain.*;
 import nl.rcomanne.gameservice.repository.AnswerRepository;
 import nl.rcomanne.gameservice.repository.GameRepository;
 import nl.rcomanne.gameservice.repository.LetterRepository;
+import nl.rcomanne.gameservice.repository.MoveRepository;
 import nl.rcomanne.gameservice.web.dto.GameDto;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ public class GameService {
 
     private final GameRepository repository;
     private final AnswerRepository answerRepository;
+    private final MoveRepository moveRepository;
     private final LetterRepository letterRepository;
 
     private final PlayerService playerService;
@@ -53,14 +55,11 @@ public class GameService {
     @Transactional
     public Game createGame(final GameDto gameDto) {
         final Player playerOne = playerService.findPlayerById(gameDto.getPlayerOneId());
-        final Answer answer = new Answer(wordService.findRandomWordWithLength(DEFAULT_WORD_LENGTH).getWord());
-        answerRepository.save(answer);
-        final Game game = new Game(gameDto.getName(), playerOne, DEFAULT_WORD_LENGTH);
-        game.setAnswer(answer);
-        final List<Letter> letters = new ArrayList<>();
-        letters.add(letterRepository.save(new Letter(answer.getWord().charAt(0), LetterState.CORRECT)));
-        game.setPlaceholder(letters);
         playerOne.setTurn(true);
+
+        final Game game = new Game(gameDto.getName(), playerOne, DEFAULT_WORD_LENGTH);
+        setAnswerForGame(game);
+
         return repository.save(game);
     }
 
@@ -71,23 +70,35 @@ public class GameService {
         game.reset();
 
         // create a new answer for the session
+        setAnswerForGame(game);
+
+        return game;
+    }
+
+    @Transactional
+    public Game setAnswerForGame(final Game game) {
+        // create a new answer for the session
         final Answer answer = new Answer(wordService.findRandomWordWithLength(DEFAULT_WORD_LENGTH).getWord());
         answerRepository.save(answer);
         game.setAnswer(answer);
+
         // create the new placeholder
-        final List<Letter> letters = new ArrayList<>();
+        final List<Letter> letters = new ArrayList<>(6);
         letters.add(letterRepository.save(new Letter(answer.getWord().charAt(0), LetterState.CORRECT)));
+        for (int i = 0; i < 5; i++) {
+            letters.add(letterRepository.save(new Letter('.', LetterState.UNKNOWN)));
+        }
         game.setPlaceholder(letters);
 
         return game;
     }
 
     @Transactional
-    public Game addMoveToGame(final long gameId, final Move move) {
+    public Game addMoveToGame(final long gameId, Move move) {
         final Game game = findGameById(gameId);
         try {
             validateMove(game, move);
-            game.addMove(move);
+//            moveRepository.save(move);
 
             if (move.getWord().equalsIgnoreCase(game.getAnswer().getWord())) {
                 // winner winner chicken dinner
@@ -98,6 +109,7 @@ public class GameService {
 
                 final String answer = game.getAnswer().getWord();
                 final List<Letter> letters = move.getLetters();
+                final List<Letter> placeholder = game.getPlaceholder();
 
                 final Map<Integer, Character> alreadyFound = new HashMap<>();
                 for (int i = 0; i < letters.size(); i++) {
@@ -107,6 +119,9 @@ public class GameService {
                     if (answer.charAt(i) == letter.getLetter()) {
                         letter.setState(LetterState.CORRECT);
                         alreadyFound.put(i, letter.getLetter());
+                        if (placeholder.get(i).getState() != LetterState.CORRECT) {
+                            placeholder.set(i, letter);
+                        }
                     } else {
                         String toIndex = answer;
                         // check if found previously
@@ -127,7 +142,8 @@ public class GameService {
                         }
                     }
                 }
-                game.setPlaceholder(letters);
+
+                game.addMove(move);
             }
         } catch (final IllegalArgumentException ex) {
             game.switchTurn(ex.getMessage());
@@ -138,10 +154,10 @@ public class GameService {
     public Game findGameById(final long gameId) {
         final Game game = repository.findById(gameId).orElseThrow(() -> new NoSuchElementException("No game found with id " + gameId));
         Hibernate.initialize(game.getPlaceholder());
+        Hibernate.initialize(game.getMoves());
         return game;
     }
 
-    @Transactional
     public void validateMove(final Game game, final Move move) throws IllegalArgumentException {
         // get and sanitize the word;
         final String guess = move.getWord().trim().toLowerCase(Locale.ENGLISH);
