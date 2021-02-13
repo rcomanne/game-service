@@ -6,12 +6,12 @@ import nl.rcomanne.gameservice.domain.Word;
 import nl.rcomanne.gameservice.repository.WordRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -33,7 +33,7 @@ public class WordService {
             log.info("initializing the words");
             final List<Word> words = new ArrayList<>();
             try {
-                final Path path = Paths.get("src/main/resources/wordlist.txt");
+                final Path path = ResourceUtils.getFile("classpath:wordlist.txt").toPath();
                 Files.lines(path).forEach(w -> {
                     if (w.contains("-") || w.contains("'") || Character.isUpperCase(w.charAt(0))) {
                         log.debug("found 'invalid' word [{}]", w);
