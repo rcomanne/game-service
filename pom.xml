@@ -165,7 +165,9 @@
                                 <assembly>
                                     <descriptorRef>artifact</descriptorRef>
                                 </assembly>
+                                <!-- TODO: add build version injection -->
                                 <tags>
+                                    <tag>latest</tag>
                                     <tag>${project.version}</tag>
                                 </tags>
                             </build>
