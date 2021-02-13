@@ -36,6 +36,7 @@ pipeline {
                 withKubeConfig(credentialsId: 'ce42c69e-6274-4126-93f8-4339dfd0ad85', namespace: 'services') {
                     echo 'Deploying...'
                     sh 'kubectl apply -f kubernetes'
+                    sh 'kubectl rollout restart deployment game-service'
                 }
             }
 

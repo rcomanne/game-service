@@ -29,6 +29,18 @@ spec:
               containerPort: 8080
             - name: actuator
               containerPort: 8081
+          startupProbe:
+            httpGet:
+              port: actuator
+              path: /actuator/health
+          readinessProbe:
+            httpGet:
+              port: actuator
+              path: /actuator/health/readiness
+          livenessProbe:
+            httpGet:
+              port: actuator
+              path: /actuator/health/liveness
         - name: database
           image: postgres:13-alpine
           env:

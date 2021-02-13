@@ -36,10 +36,10 @@ public class Game {
 
     private GameState state;
 
-    @OneToMany(cascade = { CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(cascade = { CascadeType.ALL}, fetch = FetchType.EAGER)
     private List<Move> moves;
 
-    @OneToMany(cascade = { CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(cascade = { CascadeType.ALL}, fetch = FetchType.LAZY)
     private List<Letter> placeholder;
 
     public Game(final String name, final Player player, final int wordLength) {

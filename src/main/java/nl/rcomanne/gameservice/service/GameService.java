@@ -7,6 +7,7 @@ import nl.rcomanne.gameservice.repository.AnswerRepository;
 import nl.rcomanne.gameservice.repository.GameRepository;
 import nl.rcomanne.gameservice.repository.LetterRepository;
 import nl.rcomanne.gameservice.web.dto.GameDto;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -26,8 +27,13 @@ public class GameService {
     private final WordService wordService;
 
     @Transactional
-    public List<Game> findGamesToJoin() {
-        return repository.findAllByState(GameState.WAITING_FOR_PLAYER);
+    public List<GameDto> findGamesToJoin() {
+        final List<Game> games = repository.findAllByState(GameState.WAITING_FOR_PLAYER);
+        final List<GameDto> gamesToJoin = new ArrayList<>();
+        for (Game game : games) {
+            gamesToJoin.add(new GameDto(game.getId(), game.getName()));
+        }
+        return gamesToJoin;
     }
 
     @Transactional
@@ -130,7 +136,9 @@ public class GameService {
     }
 
     public Game findGameById(final long gameId) {
-        return repository.findById(gameId).orElseThrow(() -> new NoSuchElementException("No game found with id " + gameId));
+        final Game game = repository.findById(gameId).orElseThrow(() -> new NoSuchElementException("No game found with id " + gameId));
+        Hibernate.initialize(game.getPlaceholder());
+        return game;
     }
 
     @Transactional

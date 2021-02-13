@@ -5,10 +5,10 @@ spring:
     password: sbapp
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
 
 logging.level:
   nl.rcomanne: DEBUG
 
 words:
-  init: true
+  init: false

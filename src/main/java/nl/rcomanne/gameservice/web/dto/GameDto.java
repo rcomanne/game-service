@@ -10,8 +10,13 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 public class GameDto {
-    private long gameId;
+    private long id;
     private String name;
     private long playerOneId;
     private long playerTwoId;
+
+    public GameDto(final long id, final String name) {
+        this.id = id;
+        this.name = name;
+    }
 }

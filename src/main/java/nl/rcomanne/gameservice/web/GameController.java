@@ -7,6 +7,7 @@ import nl.rcomanne.gameservice.domain.Player;
 import nl.rcomanne.gameservice.service.GameService;
 import nl.rcomanne.gameservice.service.PlayerService;
 import nl.rcomanne.gameservice.web.dto.GameDto;
+import org.hibernate.Hibernate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class GameController {
     private final SimpMessagingTemplate messagingTemplate;
 
     @GetMapping("/list")
-    public ResponseEntity<List<Game>> listActiveGames() {
+    public ResponseEntity<List<GameDto>> listActiveGames() {
         log.info("returning all active games");
         return ResponseEntity.ok(gameService.findGamesToJoin());
     }
