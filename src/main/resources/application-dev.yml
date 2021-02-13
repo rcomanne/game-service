@@ -11,4 +11,4 @@ logging.level:
   nl.rcomanne: DEBUG
 
 words:
-  init: false
+  init: true
