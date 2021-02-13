@@ -163,7 +163,7 @@
                                     <exec>
                                         <arg>java</arg>
                                         <arg>-jar</arg>
-                                        <arg>/maven/${project.artifactId}-${project.version}.jar</arg>
+                                        <arg>/maven/${project.build.finalName}.jar</arg>
                                     </exec>
                                 </entryPoint>
                                 <assembly>
@@ -180,7 +180,7 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>build</id>
+                        <id>docker-build</id>
                         <phase>install</phase>
                         <goals>
                             <goal>build</goal>

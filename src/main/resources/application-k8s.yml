@@ -2,10 +2,9 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
-    password: test
   jpa:
     hibernate:
       ddl-auto: create
 
-word:
+words:
   init: true

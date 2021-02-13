@@ -5,13 +5,15 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rcomanne.gameservice.domain.Word;
 import nl.rcomanne.gameservice.repository.WordRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
 
 import javax.annotation.PostConstruct;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -25,6 +27,7 @@ public class WordService {
 
     private final WordRepository repository;
 
+    private final ResourceLoader resourceLoader;
     private final Random r = new Random();
 
     @PostConstruct
@@ -32,9 +35,11 @@ public class WordService {
         if (initialize) {
             log.info("initializing the words");
             final List<Word> words = new ArrayList<>();
-            try {
-                final Path path = ResourceUtils.getFile("classpath:wordlist.txt").toPath();
-                Files.lines(path).forEach(w -> {
+            try (
+                    final InputStream is = resourceLoader.getResource("classpath:wordlist.txt").getInputStream();
+                    final BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))
+            ) {
+                br.lines().forEach(w -> {
                     if (w.contains("-") || w.contains("'") || Character.isUpperCase(w.charAt(0))) {
                         log.debug("found 'invalid' word [{}]", w);
                         return;
@@ -44,10 +49,11 @@ public class WordService {
                         words.add(new Word(w, w.length()));
                     }
                 });
+
                 log.info("now saving all the words...");
                 repository.saveAll(words);
                 log.info("DONE initializing the words");
-            } catch (final IOException ex) {
+            } catch (IOException ex) {
                 log.error(ex.getMessage());
                 ex.printStackTrace();
             }

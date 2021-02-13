@@ -10,5 +10,5 @@ spring:
 logging.level:
   nl.rcomanne: DEBUG
 
-word:
+words:
   init: false
