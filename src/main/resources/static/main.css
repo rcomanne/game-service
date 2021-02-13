@@ -21,3 +21,8 @@
     font-size: 20px;
     color: white;
 }
+
+.empty {
+    color: black;
+    background-color: cornflowerblue;
+}

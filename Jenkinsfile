@@ -35,8 +35,6 @@ pipeline {
             steps {
                 withKubeConfig(credentialsId: 'ce42c69e-6274-4126-93f8-4339dfd0ad85', namespace: 'services') {
                     echo 'Deploying...'
-                    sh 'kubectl version'
-                    sh 'kubectl config view'
                     sh 'kubectl apply -f kubernetes'
                 }
             }

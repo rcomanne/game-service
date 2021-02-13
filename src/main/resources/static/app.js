@@ -171,7 +171,9 @@ function updateGame(game) {
         if (game.moves !== undefined && game.moves.length !== 0) {
             for (let i = 0; i < game.moves.length; i++) {
                 html.push('<tr><td>')
-                html.push(game.moves[i].word)
+                for (let x = 0; x < game.moves[i].letters.length; x++) {
+                    html.push(`<p class="${game.moves[i].letters[x].state.toLowerCase()} letter">${game.moves[i].letters[x].letter}</p>`);
+                }
                 html.push('</tr></td>')
                 html.push("\n")
             }
@@ -180,7 +182,11 @@ function updateGame(game) {
         if (game.placeholder !== undefined && game.placeholder.length !== 0) {
             html.push('<tr><td>')
             for (let i = 0; i < game.placeholder.length; i++) {
-                html.push(`<p class="${game.placeholder[i].state.toLowerCase()} letter">${game.placeholder[i].letter}</p>`);
+                if (game.placeholder[i].state === 'CORRECT') {
+                    html.push(`<p class="${game.placeholder[i].state.toLowerCase()} letter">${game.placeholder[i].letter}</p>`);
+                } else {
+                    html.push(`<p class="empty letter">.</p>`);
+                }
             }
             html.push('</tr></td>')
             html.push("\n")

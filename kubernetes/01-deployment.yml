@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: game-service
-          image: docker.rcomanne.nlgame-service:latest
+          image: docker.rcomanne.nl/game-service:latest
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: k8s

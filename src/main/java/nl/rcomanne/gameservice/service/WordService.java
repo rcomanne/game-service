@@ -59,6 +59,9 @@ public class WordService {
 
     public Word findRandomWordWithLength(final int length) {
         final List<Word> words = findAllWordsWithLength(length);
+        if (words == null || words.isEmpty()) {
+            throw new IllegalStateException("No word found");
+        }
         return words.get(r.nextInt(words.size()));
     }
 
