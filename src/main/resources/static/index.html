@@ -11,22 +11,20 @@
     <script src="/webjars/stomp-websocket/stomp.min.js"></script>
     <script src="/app.js"></script>
 </head>
-<body>
+<body class="text-white bg-dark text-center" onload="loadIndex()">
 <noscript>
     <h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being
         enabled. Please enable Javascript and reload this page!</h2>
 </noscript>
 <main class="container">
-    <div class="text-center">
-        <h1>Welkom bij mijn woordenspel!</h1>
-        <form>
-            <div class="mx-3 py-3">
-                <label for="playerName" class="form-label">Wat is je naam?</label>
-                <input type="text" id="playerName" class="form-control" placeholder="Jouw naam hier...">
-            </div>
-            <button id="create-player" class="btn btn-primary" type="submit">Start met spelen!</button>
-        </form>
-    </div>
+    <h1 class="p-5">Welkom bij mijn woordenspel!</h1>
+    <form>
+        <div class="mx-auto p-3 col-6">
+            <label for="playerName" class="form-label">Wat is je naam?</label>
+            <input type="text" id="playerName" class="form-control" placeholder="Jouw naam hier...">
+        </div>
+        <button id="create-player" class="btn btn-secondary" type="submit">Start met spelen!</button>
+    </form>
 </main>
 </body>
 </html>

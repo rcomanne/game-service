@@ -35,6 +35,18 @@ function disconnect() {
     console.log("Disconnected");
 }
 
+function loadIndex() {
+    let player = this.getPlayer();
+    if (player !== null) {
+        window.location.href = "overview.html";
+    }
+}
+
+function loadOverview() {
+    setName();
+    getGames();
+}
+
 function createPlayer() {
     const playerName = $("#playerName").val();
     $.ajax({
@@ -49,7 +61,6 @@ function createPlayer() {
         .done(function (player, status) {
             console.log(status)
             if (status === "success") {
-                console.log(player);
                 setPlayer(player);
                 window.location.href = "overview.html";
             } else {
@@ -144,61 +155,88 @@ function joinGame(gameId) {
 }
 
 function addGameToOverview(game) {
-    $("#games").append(
-        "<tr><td>" +
-        game.name +
-        `<button id="${game.id}" class="btn btn-default" type="submit" onclick='joinGame(this.id)'>Join game</button>` +
-        "</td></tr>"
-    )
+    let html = [];
+    html.push(`<tr><td>${game.name}</td>`);
+    html.push(`<td><button id="${game.id}" class="btn btn-secondary" type="submit" onclick='joinGame(this.id)'>Join game</button></td></tr>`);
+
+    $("#games").append(html.join(''));
 }
 
 function updateGame(game) {
-    setGame(game);
     if (game !== undefined) {
-        let message = []
-        message.push('<tr id="game-message"><th>');
+        setGame(game);
         if (game.message !== undefined) {
+            let message = [];
+            message.push('<h1 id="game-message" class="mx-auto p-3">');
             message.push(`${game.message}`);
-        } else {
-            message.push(`Raad een ${game.wordLength} letter woord!`)
+            message.push('</h1>');
+            $("#game-message").replaceWith(message.join(""));
         }
-        message.push('</th></tr>');
-        $("#game-message").replaceWith(message.join(""));
 
-        let html = [];
-        html.push('<tbody id="moves">');
+        if (game.playerOne !== null && game.playerOne !== undefined) {
+            let player = [];
+            player.push(`<div id="player-one">`);
+            player.push(`<h2>${game.playerOne.name}</h2>`)
+            player.push(`<h3>${game.playerOne.score}</h3>`)
+            player.push(`</div>`);
+            $("#player-one").replaceWith(player.join(""));
+        }
+
+        if (game.playerTwo !== null && game.playerTwo !== undefined) {
+            let player = [];
+            player.push(`<div id="player-two">`);
+            player.push(`<h2>${game.playerTwo.name}</h2>`)
+            player.push(`<h3>${game.playerTwo.score}</h3>`)
+            player.push(`</div>`);
+            $("#player-two").replaceWith(player.join(""));
+        }
+
+        let moves = [];
+        moves.push('<tbody id="moves">');
 
         if (game.moves !== undefined && game.moves.length !== 0) {
             for (let i = 0; i < game.moves.length; i++) {
-                html.push('<tr><td>')
+                moves.push('<tr><td>')
                 for (let x = 0; x < game.moves[i].letters.length; x++) {
-                    html.push(`<p class="${game.moves[i].letters[x].state.toLowerCase()} letter">${game.moves[i].letters[x].letter}</p>`);
+                    moves.push(`<p class="${game.moves[i].letters[x].state.toLowerCase()} letter">${game.moves[i].letters[x].letter}</p>`);
                 }
-                html.push('</tr></td>')
-                html.push("\n")
+                moves.push('</tr></td>')
+                moves.push("\n")
             }
         }
 
         if (game.placeholder !== undefined && game.placeholder.length !== 0) {
-            html.push('<tr><td>')
+            moves.push('<tr><td>')
             for (let i = 0; i < game.placeholder.length; i++) {
-                if (game.placeholder[i].state === 'CORRECT') {
-                    html.push(`<p class="${game.placeholder[i].state.toLowerCase()} letter">${game.placeholder[i].letter}</p>`);
-                } else {
-                    html.push(`<p class="empty letter">.</p>`);
+                switch (game.placeholder[i].state) {
+                    case 'CORRECT':
+                        moves.push(`<p class="correct letter">${game.placeholder[i].letter}</p>`);
+                        break;
+                    case 'WRONG_PLACE':
+                        moves.push(`<p class="wrong_place letter">${game.placeholder[i].letter}</p>`);
+                        break;
+                    case 'WRONG':
+                        moves.push(`<p class="wrong letter">${game.placeholder[i].letter}</p>`);
+                        break;
+                    default:
+                        moves.push(`<p class="empty letter">.</p>`);
+                        break;
+
                 }
             }
-            html.push('</tr></td>')
-            html.push("\n")
+            moves.push('</tr></td>')
+            moves.push("\n")
         }
 
-        html.push("</tbody>")
-        $("#moves").replaceWith(html.join(""))
+        moves.push("</tbody>")
+        $("#moves").replaceWith(moves.join(""))
 
         if (game.state === "ACTIVE") {
             $("#word-input")[0].disabled = !hasTurn();
+            $("#create-move")[0].disabled = !hasTurn();
         } else {
             $("#word-input")[0].disabled = true;
+            $("#create-move")[0].disabled = true;
         }
     }
 }
@@ -225,7 +263,8 @@ function getActivePlayerId() {
 function setName() {
     const name = getPlayer().name;
     console.log("setting name to " + name);
-    $("#overview-name").replaceWith(`<div id="overview-name"><h2>Hallo ${name}!</h2></div>`);
+    $("#overview-name").replaceWith(`<div class="col" id="overview-name"><h2>Hallo ${name}!</h2></div>`);
+
 }
 
 function setPlayer(player) {

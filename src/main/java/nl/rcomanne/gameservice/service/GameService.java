@@ -44,8 +44,10 @@ public class GameService {
         if (gameToJoin.getState() == GameState.WAITING_FOR_PLAYER) {
             final Player playerTwo = playerService.findPlayerById(playerId);
             playerTwo.setTurn(false);
+            playerTwo.setScore(0);
             gameToJoin.setPlayerTwo(playerTwo);
             gameToJoin.setState(GameState.ACTIVE);
+            gameToJoin.setMessage(String.format("%s is erbij gekomen, beginnen maar!\n%s is aan de beurt", playerTwo.getName(), gameToJoin.activePlayer().getName()));
             return gameToJoin;
         } else {
             throw new IllegalArgumentException(String.format("Cannot join game %d as it has already started!", gameId));
@@ -56,6 +58,7 @@ public class GameService {
     public Game createGame(final GameDto gameDto) {
         final Player playerOne = playerService.findPlayerById(gameDto.getPlayerOneId());
         playerOne.setTurn(true);
+        playerOne.setScore(0);
 
         final Game game = new Game(gameDto.getName(), playerOne, DEFAULT_WORD_LENGTH);
         setAnswerForGame(game);
@@ -98,7 +101,6 @@ public class GameService {
         final Game game = findGameById(gameId);
         try {
             validateMove(game, move);
-//            moveRepository.save(move);
 
             if (move.getWord().equalsIgnoreCase(game.getAnswer().getWord())) {
                 // winner winner chicken dinner
@@ -106,7 +108,7 @@ public class GameService {
                 game.activePlayer().incrementScore(25);
             } else {
                 // not correct, processing the rest
-                game.setMessage("try again");
+                game.setMessage("Helaas! Probeer het nog eens...");
 
                 final String answer = game.getAnswer().getWord();
                 final List<Letter> letters = move.getLetters();
@@ -166,20 +168,20 @@ public class GameService {
 
         // validate word length
         if (guess.length() != game.getWordLength()) {
-            throw new IllegalArgumentException("guess has to be 6 characters");
+            throw new IllegalArgumentException(String.format("Het woord moet %d letters zijn!", game.getWordLength()));
         }
 
         // check if guess already made
         if (game.getMoves().stream()
                 .map(Move::getWord)
                 .anyMatch(pastMove -> pastMove.equalsIgnoreCase(move.getWord()))) {
-            throw new IllegalArgumentException("guess already made");
+            throw new IllegalArgumentException(String.format("Sorry, %s is al geweest...", move.getWord()));
         }
 
         // check if valid word
         List<Word> validWords = wordService.findAllWordsWithLength(game.getWordLength());
         if (validWords.parallelStream().noneMatch(w -> w.getWord().equalsIgnoreCase(move.getWord()))) {
-            throw new IllegalArgumentException("not a valid word");
+            throw new IllegalArgumentException(String.format("Sorry, %s staat niet in onze woordenlijst...", move.getWord()));
         }
     }
 }

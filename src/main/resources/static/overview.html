@@ -10,43 +10,48 @@
     <script src="/webjars/stomp-websocket/stomp.min.js"></script>
     <script src="/app.js"></script>
 </head>
-<body onload="setName(),getGames()">
+<body class="text-white bg-dark text-center" onload="loadOverview()">
 <noscript>
-    <h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being enabled. Please enable Javascript and reload this page!</h2>
+    <h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being
+        enabled. Please enable Javascript and reload this page!</h2>
 </noscript>
 <main class="container">
-    <div class="text-center">
-        <div class="mx-2 py-2" id="overview-name">
+    <div class="row m-2 p-2">
+        <div class="col" id="overview-name">
 
         </div>
+    </div>
 
-        <div class="mx-2 py-2">
+    <div class="row mx-auto p-2 border border-light rounded ">
+        <!-- Create a game overview -->
+        <div class="col p-3">
             <form>
-                <div class="mx-2 py-1 row">
+                <div class="row">
                     <div class="col">
                         <h2>Maak een spel...</h2>
                     </div>
                 </div>
-                <div class="mx-2 py-1 row">
-                    <div class="col">
+                <div class="row">
+                    <div class="col-6 mx-auto p-2">
                         <input type="text" id="gameName" class="form-control" placeholder="Naam van jouw spel...">
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col">
-                        <button id="create-game" class="btn btn-primary" type="submit">Maak spel aan!</button>
+                    <div class="col-6 mx-auto p-2">
+                        <button id="create-game" class="btn btn-secondary btn-lg" type="submit">Maak spel aan!</button>
                     </div>
                 </div>
             </form>
         </div>
 
-        <div class="mx-2 py-2">
+        <!-- Join a game overview -->
+        <div class="col p-3">
             <h2>Of ga naar een bestaande game...</h2>
-            <table id="game-sessions" class="table">
+            <table id="game-sessions" class="table table-dark table-striped mx-auto p-2">
                 <thead>
-                    <tr>
-                        <th>Actieve sessies om te joinen</th>
-                    </tr>
+                <tr>
+                    <th scope="row">Actieve sessies om te joinen</th>
+                </tr>
                 </thead>
                 <tbody id="games">
 
