@@ -59,7 +59,7 @@ public class Game {
     public void switchTurn(final String message) {
         this.playerOne.setTurn(!this.playerOne.isTurn());
         this.playerTwo.setTurn(!this.playerTwo.isTurn());
-        this.message = String.format("%s \n%s is aan de beurt", message, this.activePlayer().getName());
+        this.message = String.format("%s%n%s is aan de beurt", message, this.activePlayer().getName());
     }
 
     public Player activePlayer() {
@@ -68,13 +68,12 @@ public class Game {
         } else if (this.playerTwo.isTurn()) {
             return this.playerTwo;
         } else {
-            throw new IllegalStateException("no active player found in session");
+            throw new IllegalStateException("Geen actieve speler in de sessie");
         }
     }
 
     public void setPlaceholder(final List<Letter> letters) {
         if (this.placeholder != null) {
-
             this.placeholder.clear();
             this.placeholder.addAll(letters);
         } else {

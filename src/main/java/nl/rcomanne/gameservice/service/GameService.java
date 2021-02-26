@@ -1,28 +1,42 @@
 package nl.rcomanne.gameservice.service;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import nl.rcomanne.gameservice.domain.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.NoSuchElementException;
+
+import javax.transaction.Transactional;
+
+import nl.rcomanne.gameservice.domain.Answer;
+import nl.rcomanne.gameservice.domain.Game;
+import nl.rcomanne.gameservice.domain.GameState;
+import nl.rcomanne.gameservice.domain.Letter;
+import nl.rcomanne.gameservice.domain.LetterState;
+import nl.rcomanne.gameservice.domain.Move;
+import nl.rcomanne.gameservice.domain.Player;
+import nl.rcomanne.gameservice.domain.Word;
 import nl.rcomanne.gameservice.repository.AnswerRepository;
 import nl.rcomanne.gameservice.repository.GameRepository;
 import nl.rcomanne.gameservice.repository.LetterRepository;
-import nl.rcomanne.gameservice.repository.MoveRepository;
 import nl.rcomanne.gameservice.web.dto.GameDto;
+
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
-import java.util.*;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class GameService {
     private static final int DEFAULT_WORD_LENGTH = 6;
+    private static final int DEFAULT_GAME_LENGTH = 6;
 
     private final GameRepository repository;
     private final AnswerRepository answerRepository;
-    private final MoveRepository moveRepository;
     private final LetterRepository letterRepository;
 
     private final PlayerService playerService;
@@ -47,7 +61,7 @@ public class GameService {
             playerTwo.setScore(0);
             gameToJoin.setPlayerTwo(playerTwo);
             gameToJoin.setState(GameState.ACTIVE);
-            gameToJoin.setMessage(String.format("%s is erbij gekomen, beginnen maar!\n%s is aan de beurt", playerTwo.getName(), gameToJoin.activePlayer().getName()));
+            gameToJoin.setMessage(String.format("%s is erbij gekomen, beginnen maar!%n%s is aan de beurt", playerTwo.getName(), gameToJoin.activePlayer().getName()));
             return gameToJoin;
         } else {
             throw new IllegalArgumentException(String.format("Cannot join game %d as it has already started!", gameId));
@@ -140,13 +154,18 @@ public class GameService {
                             log.debug("answer contains letter [{}]", letter.getLetter());
                             letter.setState(LetterState.WRONG_PLACE);
                             alreadyFound.put(index, letter.getLetter());
-                        } {
+                        } else {
                             letter.setState(LetterState.WRONG);
                         }
                     }
                 }
 
                 game.addMove(move);
+                if (game.getMoves().size() >= DEFAULT_GAME_LENGTH) {
+                    game.setState(GameState.DONE);
+                    game.setMessage("Helaas, geen beurten meer over...");
+                    game.setPlaceholder(game.getAnswer().toLetters());
+                }
             }
         } catch (final IllegalArgumentException ex) {
             game.switchTurn(ex.getMessage());
@@ -162,7 +181,11 @@ public class GameService {
     }
 
     public void validateMove(final Game game, final Move move) throws IllegalArgumentException {
-        // get and sanitize the word;
+        if (game.getMoves().size() >= DEFAULT_GAME_LENGTH) {
+            throw new IllegalStateException("Alle beurten zijn al geweest!");
+        }
+
+        // get and sanitize the word
         final String guess = move.getWord().trim().toLowerCase(Locale.ENGLISH);
         move.setWord(guess);
 
@@ -173,8 +196,8 @@ public class GameService {
 
         // check if guess already made
         if (game.getMoves().stream()
-                .map(Move::getWord)
-                .anyMatch(pastMove -> pastMove.equalsIgnoreCase(move.getWord()))) {
+            .map(Move::getWord)
+            .anyMatch(pastMove -> pastMove.equalsIgnoreCase(move.getWord()))) {
             throw new IllegalArgumentException(String.format("Sorry, %s is al geweest...", move.getWord()));
         }
 

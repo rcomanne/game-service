@@ -1,10 +1,6 @@
 let stompClient = null;
 let connected = false;
 
-function setConnected(connected) {
-    this.connected = connected;
-}
-
 function initializeGame() {
     updateGame(getGame());
     connect();
@@ -17,7 +13,7 @@ function connect() {
     stompClient = Stomp.over(socket);
     // Actually connect
     stompClient.connect({}, function (frame) {
-        setConnected(true);
+        this.connected = true;
         console.log('Connected: ' + frame);
         // Subscribe to the topic
         stompClient.subscribe('/topic/game/' + getGame().id, function (response) {
@@ -31,14 +27,32 @@ function disconnect() {
     if (stompClient !== null) {
         stompClient.disconnect();
     }
-    setConnected(false);
+    this.connected = true;
     console.log("Disconnected");
 }
 
 function loadIndex() {
     let player = this.getPlayer();
     if (player !== null) {
-        window.location.href = "overview.html";
+        // check if player actually exists
+        $.ajax({
+            url: `/player/${player.id}`,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            method: 'GET',
+            dataType: "json"
+        })
+            .done(function (receivedPlayer, status) {
+                console.log(status)
+                if (status === "success") {
+                    setPlayer(receivedPlayer);
+                    window.location.href = "overview.html";
+                }
+            })
+            .fail(function (data, status) {
+                console.log(`status: ${status}, response: ${data}`);
+            })
     }
 }
 
@@ -118,7 +132,7 @@ function getGames() {
         .done(function (games, status) {
             console.log(games, status)
             if (status === "success") {
-                for (i = 0; i < games.length; i++) {
+                for (let i = 0; i < games.length; i++) {
                     addGameToOverview(games[i]);
                 }
             } else {
@@ -143,7 +157,7 @@ function joinGame(gameId) {
             if (status === "success") {
                 console.log(game);
                 setGame(game);
-                connect(game.id)
+                connect()
                 window.location.href = "game.html";
             } else {
                 console.log("failed?");
@@ -175,18 +189,26 @@ function updateGame(game) {
 
         if (game.playerOne !== null && game.playerOne !== undefined) {
             let player = [];
-            player.push(`<div id="player-one">`);
-            player.push(`<h2>${game.playerOne.name}</h2>`)
-            player.push(`<h3>${game.playerOne.score}</h3>`)
+            if (game.playerOne.turn) {
+                player.push(`<div id="player-one" class="border border-success rounded active_player p3">`);
+            } else {
+                player.push(`<div id="player-one" class="border border-warning rounded p3">`);
+            }
+            player.push(`<h1 class="py-3">${game.playerOne.name}</h1>`)
+            player.push(`<h2 class="py-2">${game.playerOne.score}</h2>`)
             player.push(`</div>`);
             $("#player-one").replaceWith(player.join(""));
         }
 
         if (game.playerTwo !== null && game.playerTwo !== undefined) {
             let player = [];
-            player.push(`<div id="player-two">`);
-            player.push(`<h2>${game.playerTwo.name}</h2>`)
-            player.push(`<h3>${game.playerTwo.score}</h3>`)
+            if (game.playerTwo.turn) {
+                player.push(`<div id="player-two" class="border border-success rounded active_player p3">`);
+            } else {
+                player.push(`<div id="player-two" class="border border-warning rounded p3">`);
+            }
+            player.push(`<h1 class="py-3">${game.playerTwo.name}</h1>`)
+            player.push(`<h2 class="py-2">${game.playerTwo.score}</h2>`)
             player.push(`</div>`);
             $("#player-two").replaceWith(player.join(""));
         }

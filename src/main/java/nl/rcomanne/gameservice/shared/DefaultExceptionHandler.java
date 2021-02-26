@@ -22,7 +22,6 @@ public class DefaultExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(NoSuchElementException.class)
     private ResponseEntity<Map<String, String>> handleNoSuchElementException(final NoSuchElementException ex) {
         log.error("NoSuchElementException: " + ex.getMessage());
-        ex.printStackTrace();
         return ResponseEntity.badRequest().body(Map.of("message", ex.getMessage()));
     }
 }

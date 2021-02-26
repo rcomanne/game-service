@@ -26,3 +26,9 @@
     color: black;
     background-color: cornflowerblue;
 }
+
+.active_player {
+    color: white;
+    background-color: darkgreen;
+    border-collapse: collapse;
+}

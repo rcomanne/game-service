@@ -6,6 +6,8 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,6 +18,7 @@ public class Player {
     private Long id;
 
     @OneToOne
+    @JsonIgnore
     private Game activeGame;
     private int score;
 

@@ -6,6 +6,8 @@ import nl.rcomanne.gameservice.domain.Player;
 import nl.rcomanne.gameservice.service.PlayerService;
 import nl.rcomanne.gameservice.web.dto.PlayerDto;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,5 +25,11 @@ public class PlayerController {
     public ResponseEntity<Player> createPlayer(@RequestBody PlayerDto dto) {
         log.info("creating player with name {}", dto.getName());
         return ResponseEntity.ok(playerService.save(dto.toPlayer()));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Player> getPlayer(@PathVariable long id) {
+        log.info("getting player with id {}", id);
+        return ResponseEntity.ok(playerService.findPlayerById(id));
     }
 }
