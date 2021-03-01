@@ -135,7 +135,7 @@ public class GameService {
                     // check if letter in position is the same as the one of the answer
                     if (answer.charAt(i) == letter.getLetter()) {
                         letter.setState(LetterState.CORRECT);
-                        alreadyFound.put(i, letter.getLetter());
+                        alreadyFound.replace(i, letter.getLetter());
                         if (placeholder.get(i).getState() != LetterState.CORRECT) {
                             placeholder.set(i, letter);
                         }
