@@ -13,5 +13,9 @@ management:
     health:
       enabled: true
 
+logging.level:
+  nl.rcomanne.gameservice.service: DEBUG
+
+
 words:
   init: true

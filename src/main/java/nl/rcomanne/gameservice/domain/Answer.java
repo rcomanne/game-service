@@ -1,16 +1,18 @@
 package nl.rcomanne.gameservice.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.util.List;
-import java.util.stream.Collectors;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -29,5 +31,13 @@ public class Answer {
 
     public List<Letter> toLetters() {
         return word.chars().mapToObj(c -> new Letter((char) c, LetterState.CORRECT)).collect(Collectors.toList());
+    }
+
+    public Map<Integer, Letter> toMap() {
+        final Map<Integer, Letter> letterMap = new HashMap<>(6);
+        for (int i = 0; i < word.length(); i++) {
+            letterMap.put(i, new Letter(word.charAt(i), LetterState.CORRECT));
+        }
+        return letterMap;
     }
 }

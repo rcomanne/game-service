@@ -100,10 +100,10 @@ public class GameService {
         game.setAnswer(answer);
 
         // create the new placeholder
-        final List<Letter> letters = new ArrayList<>(6);
-        letters.add(letterRepository.save(new Letter(answer.getWord().charAt(0), LetterState.CORRECT)));
-        for (int i = 0; i < 5; i++) {
-            letters.add(letterRepository.save(new Letter('.', LetterState.UNKNOWN)));
+        final Map<Integer, Letter> letters = new HashMap<>(6);
+        letters.put(0, letterRepository.save(new Letter(answer.getWord().charAt(0), LetterState.CORRECT)));
+        for (int i = 1; i < 6; i++) {
+            letters.put(i, letterRepository.save(new Letter('.', LetterState.UNKNOWN)));
         }
         game.setPlaceholder(letters);
 
@@ -126,19 +126,16 @@ public class GameService {
 
                 final String answer = game.getAnswer().getWord();
                 final List<Letter> letters = move.getLetters();
-                final List<Letter> placeholder = game.getPlaceholder();
+                final Map<Integer, Letter> placeholder = game.getPlaceholder();
 
                 final Map<Integer, Character> alreadyFound = new HashMap<>();
                 for (int i = 0; i < letters.size(); i++) {
                     final Letter letter = letters.get(i);
-
                     // check if letter in position is the same as the one of the answer
                     if (answer.charAt(i) == letter.getLetter()) {
                         letter.setState(LetterState.CORRECT);
                         alreadyFound.replace(i, letter.getLetter());
-                        if (placeholder.get(i).getState() != LetterState.CORRECT) {
-                            placeholder.set(i, letter);
-                        }
+                        placeholder.put(i, letter);
                     } else {
                         String toIndex = answer;
                         // check if found previously
@@ -153,7 +150,7 @@ public class GameService {
                         if (index >= 0) {
                             log.debug("answer contains letter [{}]", letter.getLetter());
                             letter.setState(LetterState.WRONG_PLACE);
-                            alreadyFound.put(index, letter.getLetter());
+                            alreadyFound.replace(index, letter.getLetter());
                         } else {
                             letter.setState(LetterState.WRONG);
                         }
@@ -164,7 +161,7 @@ public class GameService {
                 if (game.getMoves().size() >= DEFAULT_GAME_LENGTH) {
                     game.setState(GameState.DONE);
                     game.setMessage("Helaas, geen beurten meer over...");
-                    game.setPlaceholder(game.getAnswer().toLetters());
+                    game.setPlaceholder(game.getAnswer().toMap());
                 }
             }
         } catch (final IllegalArgumentException ex) {
@@ -181,7 +178,9 @@ public class GameService {
     }
 
     public void validateMove(final Game game, final Move move) throws IllegalArgumentException {
+        log.debug("validating move");
         if (game.getMoves().size() >= DEFAULT_GAME_LENGTH) {
+            log.debug("no more moves left in the game");
             throw new IllegalStateException("Alle beurten zijn al geweest!");
         }
 
@@ -191,19 +190,23 @@ public class GameService {
 
         // validate word length
         if (guess.length() != game.getWordLength()) {
+            log.debug("guess length does not equal the answer length");
             throw new IllegalArgumentException(String.format("Het woord moet %d letters zijn!", game.getWordLength()));
         }
 
         // check if guess already made
-        if (game.getMoves().stream()
+        final boolean guessFound = game.getMoves().stream()
             .map(Move::getWord)
-            .anyMatch(pastMove -> pastMove.equalsIgnoreCase(move.getWord()))) {
+            .anyMatch(pastMove -> pastMove.equalsIgnoreCase(move.getWord()));
+        if (guessFound) {
+            log.debug("guess already made");
             throw new IllegalArgumentException(String.format("Sorry, %s is al geweest...", move.getWord()));
         }
 
         // check if valid word
         List<Word> validWords = wordService.findAllWordsWithLength(game.getWordLength());
         if (validWords.parallelStream().noneMatch(w -> w.getWord().equalsIgnoreCase(move.getWord()))) {
+            log.debug("[{}] is not on our wordlist", move.getWord());
             throw new IllegalArgumentException(String.format("Sorry, %s staat niet in onze woordenlijst...", move.getWord()));
         }
     }

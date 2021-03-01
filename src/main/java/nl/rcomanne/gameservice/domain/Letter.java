@@ -31,4 +31,9 @@ public class Letter {
     public Letter(final char letter) {
         this(letter, LetterState.UNKNOWN);
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(this.letter);
+    }
 }

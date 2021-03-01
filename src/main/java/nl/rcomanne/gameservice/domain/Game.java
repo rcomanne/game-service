@@ -8,6 +8,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -40,7 +41,7 @@ public class Game {
     private List<Move> moves;
 
     @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval = true)
-    private List<Letter> placeholder;
+    private Map<Integer, Letter> placeholder;
 
     public Game(final String name, final Player player, final int wordLength) {
         this.state = GameState.WAITING_FOR_PLAYER;
@@ -72,18 +73,9 @@ public class Game {
         }
     }
 
-    public void setPlaceholder(final List<Letter> letters) {
-        if (this.placeholder != null) {
-            this.placeholder.clear();
-            this.placeholder.addAll(letters);
-        } else {
-            this.placeholder = letters;
-        }
-    }
-
     public void gameFinished() {
         this.state = GameState.DONE;
-        this.setPlaceholder(this.answer.toLetters());
+        this.setPlaceholder(this.answer.toMap());
         this.message = String.format("Gefeliciteerd %s, je hebt gewonnen!", this.activePlayer().getName());
     }
 

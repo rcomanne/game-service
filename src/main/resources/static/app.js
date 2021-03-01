@@ -227,18 +227,18 @@ function updateGame(game) {
             }
         }
 
-        if (game.placeholder !== undefined && game.placeholder.length !== 0) {
+        if (game.placeholder !== undefined) {
             moves.push('<tr><td>')
-            for (let i = 0; i < game.placeholder.length; i++) {
-                switch (game.placeholder[i].state) {
+            for (const letter of Object.values(game.placeholder)) {
+                switch (letter.state) {
                     case 'CORRECT':
-                        moves.push(`<p class="correct letter">${game.placeholder[i].letter}</p>`);
+                        moves.push(`<p class="correct letter">${letter.letter}</p>`);
                         break;
                     case 'WRONG_PLACE':
-                        moves.push(`<p class="wrong_place letter">${game.placeholder[i].letter}</p>`);
+                        moves.push(`<p class="wrong_place letter">${letter.letter}</p>`);
                         break;
                     case 'WRONG':
-                        moves.push(`<p class="wrong letter">${game.placeholder[i].letter}</p>`);
+                        moves.push(`<p class="wrong letter">${letter.letter}</p>`);
                         break;
                     default:
                         moves.push(`<p class="empty letter">.</p>`);

@@ -1,13 +1,13 @@
 .correct {
-    background-color: green;
+    background-color: darkgreen;
 }
 
 .wrong_place {
-    background-color: yellow;
+    background-color: darkorange;
 }
 
 .wrong {
-    background-color: red;
+    background-color: darkred;
 }
 
 .unknown {
